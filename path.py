@@ -2,7 +2,7 @@
 name: path.py -- dollarstore-recognizer
 description: Path and point object definitions
 authors: TJ Schultz, []
-date: 1/14/22
+date: 1/20/22
 """
 
 ## point class
