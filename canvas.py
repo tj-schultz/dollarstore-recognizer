@@ -13,6 +13,7 @@ import time
 line_pref = {
     "width": 5,
     "fill": "black",
+    "point_fill": "medium sea green",
     "ssteps": 5
 }
 
@@ -34,9 +35,13 @@ class PathCanvas():
         self.parent = parent
 
         ## create native tkinter canvas object inside PathCanvas
+        ## set canvas to incanvas
         self.canvas = incanvas
-        self.canvas.pack(side="top", fill="none", expand=False)
 
+        ## pack
+        self.canvas.pack(side="top", fill="none", expand=True)
+
+        ## migrate passed height, width consts
         self.C_WIDTH = WIDTH
         self.C_HEIGHT = HEIGHT
 
@@ -52,7 +57,6 @@ class PathCanvas():
     ## pen tool method to draw path
     def pen(self, event):
         if not self.down:
-            print("Pen")
             self.clear()
             self.toggle_down()
             start_x = event.x
@@ -66,7 +70,7 @@ class PathCanvas():
         time.sleep(self.PATH_PARSE_CONST)
         if self.down:
             self.path.stitch(pth.Point(x, y))
-            print(str(self.path))
+            #print(str(self.path))
 
     ## draws polyline on canvas for last two points
     def draw_polyline(self, event):
@@ -85,8 +89,26 @@ class PathCanvas():
             ## update the Canvas object
             self.canvas.update()
 
+    ## draws points on canvas for completed path
+    def draw_points(self, show):
+        color = ""
+        ## if 2 or more points in path, draw the points with a 'shown' color or 'hidden' color
+        if len(self.path) > 1 and show:
+            color = line_pref["point_fill"]
+        else:
+            color = line_pref["fill"]
+        for p in self.path.parsed_path:
+            self.canvas.create_oval(p.x - 2, p.y - 2, \
+                                    p.x + 2, p.y + 2, \
+                                    fill=color)
+        ## update the Canvas object
+        self.canvas.update()
+
     ## clears the canvas
     def clear(self):
+        ## dealloc list of Point objects
         del self.path.parsed_path
         self.path = pth.Path()
+
+        ## clear Canvas object of all drawings
         self.canvas.delete("all")
