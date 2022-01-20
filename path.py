@@ -17,19 +17,23 @@ class Point():
 
 ## path class
 class Path():
-    parsed_path = []
+    parsed_path = None
 
-    def __init__(self, p):
-        head = p
-        self.parsed_path.append(p)
+    def __init__(self, p=None):
+
+        self.parsed_path = []
+        if p is not None:
+            self.stitch(p)
+
+
+    def __len__(self):
+        return len(self.parsed_path)
+
+    def __str__(self):
+        path_str = 'Path length: %s\tPath:\n' % len(self)
+        for p in self.parsed_path:
+            path_str += ('->(%s,%s)' % (p.x, p.y))
+        return path_str
 
     def stitch(self, p):
         self.parsed_path.append(p)
-
-    def get_length(self):
-        return len(self.parsed_path)
-
-    def display(self):
-        print('Length:%s\tPath:\n' % len(self.parsed_path))
-        for i in range(len(self.parsed_path)):
-            print('%s, %s\n' % (self.parsed_path[i].x, self.parsed_path[i].y))
