@@ -38,5 +38,11 @@ class Path():
             path_str += ('->(%s,%s)' % (p.x, p.y))
         return path_str
 
+    ## appends point to end of path
     def stitch(self, p):
         self.parsed_path.append(p)
+
+    ## inserts point at index i
+    def insert(self, i, p):
+        if i < len(self.parsed_path):
+            self.parsed_path.insert(i, p)
