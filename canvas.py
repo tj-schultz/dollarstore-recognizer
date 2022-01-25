@@ -30,13 +30,14 @@ class PathCanvas():
     C_WIDTH = 0
     C_HEIGHT = 0
 
-    def __init__(self, parent, incanvas, WIDTH, HEIGHT):
+    def __init__(self, parent, _canvas, WIDTH, HEIGHT, down=False):
 
         self.parent = parent
+        self.down = down
 
         ## create native tkinter canvas object inside PathCanvas
-        ## set canvas to incanvas
-        self.canvas = incanvas
+        ## set canvas to _canvas
+        self.canvas = _canvas
 
         ## pack
         self.canvas.pack(side="top", fill="none", expand=True)
@@ -74,8 +75,16 @@ class PathCanvas():
 
     ## draws polyline on canvas for last two points
     def draw_polyline(self, event):
-        ## prevents drawing beyond border
-        if event.x <= self.C_WIDTH and event.y <= self.C_HEIGHT:
+
+        ## simply plot the line in one pass
+        if event == None:
+            for i in range(len(self.path)-1):
+                self.canvas.create_line(self.path.parsed_path[-(i + 2)].x, self.path.parsed_path[-(i + 2)].y, \
+                                        self.path.parsed_path[-(i + 1)].x, self.path.parsed_path[-(i + 1)].y, \
+                                        width=line_pref["width"], fill=line_pref["fill"], \
+                                        splinesteps=line_pref["ssteps"], capstyle="round")
+        ## prevents drawing beyond border during active drawing
+        elif event.x <= self.C_WIDTH and event.y <= self.C_HEIGHT:
 
             ## log motion
             self.log_motion(event.x, event.y)
