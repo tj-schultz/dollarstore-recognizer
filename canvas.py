@@ -14,6 +14,7 @@ line_pref = {
     "width": 5,
     "fill": "black",
     "point_fill": "medium sea green",
+    "recog_fill": "chocolate1",
     "ssteps": 5
 }
 
@@ -26,6 +27,7 @@ class PathCanvas():
     ## class members
     down = False
     path = pth.Path()
+    resampled = pth.Path()
 
     C_WIDTH = 0
     C_HEIGHT = 0
@@ -99,17 +101,14 @@ class PathCanvas():
             self.canvas.update()
 
     ## draws points on canvas for completed path
-    def draw_points(self, show):
-        color = ""
+    def draw_points(self, path, color="black"):
+
         ## if 2 or more points in path, draw the points with a 'shown' color or 'hidden' color
-        if len(self.path) > 1 and show:
-            color = line_pref["point_fill"]
-        else:
-            color = line_pref["fill"]
-        for p in self.path.parsed_path:
-            self.canvas.create_oval(p.x - 2, p.y - 2, \
-                                    p.x + 2, p.y + 2, \
-                                    fill=color)
+        if len(path) > 1:
+            for p in path.parsed_path:
+                self.canvas.create_oval(p.x - 2, p.y - 2, \
+                                        p.x + 2, p.y + 2, \
+                                        fill=color)
         ## update the Canvas object
         self.canvas.update()
 
