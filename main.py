@@ -5,9 +5,12 @@ authors: TJ Schultz, []
 date: 1/20/22
 """
 import os.path
+import time
 import tkinter as tk
 import canvas as cvs
 import sys
+import path
+import dollar
 
 ## main application class defined for tkinter
 class MainApplication(tk.Frame):
@@ -27,11 +30,15 @@ class MainApplication(tk.Frame):
         C_WIDTH = 300
         C_HEIGHT = 300
 
+        R_WIDTH = 250
+        R_HEIGHT = 250
+
         self.canvas = tk.Canvas(root, width=C_WIDTH, height=C_HEIGHT, bg="lightgrey", \
                                          highlightthickness=5, highlightbackground="medium sea green")
 
         ## create PathCanvas container object for Canvas
         self.pathcanvas = cvs.PathCanvas(root, self.canvas, C_WIDTH, C_HEIGHT)
+
 
         ## binding mouse events to Canvas object in tk frame, and tying them to functions in PathCanvas object
         self.canvas.bind("<Button-1>", self.pathcanvas.pen)
@@ -42,6 +49,21 @@ class MainApplication(tk.Frame):
         self.canvas.grid(padx=100)
         self.canvas.pack(side="top", fill="both", expand=False)
 
+
+        ## GUI -- Recognizer display
+        self.recog_frame = tk.Frame(root)
+        self.score_entry = tk.Entry(self.recog_frame, width=8)
+        self.recog_frame.pack(side="top")
+        self.score_entry.pack(side="bottom")
+
+        ## recognizer output canvas
+        self.recog_canvas = tk.Canvas(self.recog_frame, width=R_WIDTH, height=R_HEIGHT, bg="lightgrey", \
+                                      highlightthickness=3, highlightbackground="chocolate1")
+
+        self.recog_pathcanvas = cvs.PathCanvas(root, self.recog_canvas, R_WIDTH, R_HEIGHT, True)
+
+        self.recog_canvas.pack(side="top", fill="both", expand=False)
+
         ## GUI -- Path length display
         self.length_frame = tk.Frame(root)
         self.length_label = tk.Label(self.length_frame, text="Path Length:")
@@ -49,6 +71,8 @@ class MainApplication(tk.Frame):
         self.length_frame.pack(side="top")
         self.length_label.pack(side="left")
         self.length_entry.pack(side="left")
+
+
 
         ## GUI -- Path length -- Path Points display
         self.points_check = tk.Checkbutton(self.length_frame, text="Show points",\
@@ -111,8 +135,8 @@ if __name__ == "__main__":
 
     ## define window properties
     root.title("dollarstore-recognizer")
-    root.minsize(300, 500)
-    root.maxsize(300, 500)
+    root.minsize(300, 700)
+    root.maxsize(300, 700)
 
     ## organize root geometry as window
     MainApplication(root).pack(side="top", fill="both", expand=True)
