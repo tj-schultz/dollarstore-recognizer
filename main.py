@@ -9,8 +9,10 @@ import time
 import tkinter as tk
 import canvas as cvs
 import sys
-import path
+
 import dollar
+import path
+import recognizer as rec
 
 ## main application class defined for tkinter
 class MainApplication(tk.Frame):
@@ -112,19 +114,29 @@ class MainApplication(tk.Frame):
         print(event.x, event.y)
         return (event.x, event.y)
 
-    ## calls pen to end drawing and updates the path length entry
+    ## calls pen to end drawing and updates the path length entry, then calls method to recognize
     def update_path(self, event):
 
         ## stops pen
         self.pathcanvas.pen(event)
 
-        ## draws points if show_points
-        self.pathcanvas.draw_points(self.show_points.get())
+        ## recognize
+        R = rec.Recognizer()
+        R.recognize(self.pathcanvas.path)
 
         ## updates previous path length display
         self.length_entry.delete(0, tk.END)
-        self.length_entry.insert(0, len(self.pathcanvas.path))
+        self.length_entry.insert(0, R.path_length(self.pathcanvas.path).__format__(.2))
         self.length_entry.update()
+
+        ## resample path
+        self.pathcanvas.resampled = R.resample(self.pathcanvas.path, dollar.Dollar.prefs["n_points"])
+        #self.recog_pathcanvas.path = R.translate_to_origin(R.scale_to_square(path.Path(dollar.Dollar.templates["arrow"]), 250))
+        #self.recog_pathcanvas.draw_points(self.recog_pathcanvas.path, cvs.line_pref["recog_fill"])
+
+        ## draws points if show_points
+        if self.show_points.get():
+            self.pathcanvas.draw_points(self.pathcanvas.resampled, cvs.line_pref["point_fill"])
 
 if __name__ == "__main__":
     ## tkinter application root
