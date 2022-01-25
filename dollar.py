@@ -8,6 +8,10 @@ from path import Point
 
 ## Dollar class with template path.Path() dictionary and accessor methods
 class Dollar():
+    prefs = {
+        "n_points": 64,
+        "square_size": 100
+    }
     templates = {
         "triangle": [Point(137,139),Point(135,141),Point(133,144),Point(132,146),Point(130,149),Point(128,151),Point(126,155),Point(123,160),Point(120,166),Point(116,171),Point(112,177),Point(107,183),Point(102,188),Point(100,191),Point(95,195),Point(90,199),Point(86,203),Point(82,206),Point(80,209),Point(75,213),Point(73,213),Point(70,216),Point(67,219),Point(64,221),Point(61,223),Point(60,225),Point(62,226),Point(65,225),Point(67,226),Point(74,226),Point(77,227),Point(85,229),Point(91,230),Point(99,231),Point(108,232),Point(116,233),Point(125,233),Point(134,234),Point(145,233),Point(153,232),Point(160,233),Point(170,234),Point(177,235),Point(179,236),Point(186,237),Point(193,238),Point(198,239),Point(200,237),Point(202,239),Point(204,238),Point(206,234),Point(205,230),Point(202,222),Point(197,216),Point(192,207),Point(186,198),Point(179,189),Point(174,183),Point(170,178),Point(164,171),Point(161,168),Point(154,160),Point(148,155),Point(143,150),Point(138,148),Point(136,148)],
         "x": [Point(87,142),Point(89,145),Point(91,148),Point(93,151),Point(96,155),Point(98,157),Point(100,160),Point(102,162),Point(106,167),Point(108,169),Point(110,171),Point(115,177),Point(119,183),Point(123,189),Point(127,193),Point(129,196),Point(133,200),Point(137,206),Point(140,209),Point(143,212),Point(146,215),Point(151,220),Point(153,222),Point(155,223),Point(157,225),Point(158,223),Point(157,218),Point(155,211),Point(154,208),Point(152,200),Point(150,189),Point(148,179),Point(147,170),Point(147,158),Point(147,148),Point(147,141),Point(147,136),Point(144,135),Point(142,137),Point(140,139),Point(135,145),Point(131,152),Point(124,163),Point(116,177),Point(108,191),Point(100,206),Point(94,217),Point(91,222),Point(89,225),Point(87,226),Point(87,224)],
