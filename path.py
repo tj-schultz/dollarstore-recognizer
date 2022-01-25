@@ -22,8 +22,11 @@ class Path():
     def __init__(self, p=None):
 
         self.parsed_path = []
-        if p is not None:
+        if type(p) == Point:    ## p is a singular starting point
             self.stitch(p)
+        elif type(p) == list:   ## p is a list of Points
+            for _p in p:
+                self.stitch(_p)
 
 
     def __len__(self):
