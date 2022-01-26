@@ -22,7 +22,7 @@ class Recognizer():
 
 
         def rotate_path(self, path):
-            for 
+            for
     def __init__(self):
 
 
