@@ -3,7 +3,7 @@ name: recognizer.py -- dollarstore-recognizer
 description: Recognizer class with member functions to resample, rotate, scale/translate paths and
 run calculations to determine the score for a particular recognizer
 authors: TJ Schultz, []
-date: 1/25/22
+date: 1/26/22
 """
 import math
 import path as pth
@@ -11,6 +11,20 @@ import dollar
 
 ## recognizer class containing canvas display methods for
 class Recognizer():
+
+    ##
+    class RotationSet():
+
+        ## for this particular project, the rotations are through 90, 180, and 270
+        rotations = [90, 180, 270]
+
+        def __init(self, templates):
+
+
+        def rotate_path(self, path):
+            for 
+    def __init__(self):
+
 
     ## returns distance between points in non-pixel units
     def distance(self, p1, p2):
