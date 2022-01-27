@@ -50,7 +50,6 @@ class Recognizer():
             return path
 
         interval = self.path_length(path) / (n - 1)
-        print("interval ", interval)
         dist = 0
 
         ## create a copy path
@@ -61,7 +60,7 @@ class Recognizer():
 
         i = 1
         while i < len(copy) - 1 and len(new_path) < n:
-            print(i, len(copy), len(new_path))
+            #print(i, len(copy), len(new_path))
 
             ## get points
             p1 = path.parsed_path[i]
@@ -142,8 +141,6 @@ class Recognizer():
         bbox = self.bbox(path)
         b_width = bbox[1] - bbox[0]
         b_height = bbox[3] - bbox[2]
-
-        print(b_width, b_height)
 
         new_path = pth.Path()
 
@@ -239,7 +236,7 @@ class Recognizer():
         candidate = self.preprocess(path)
 
         ## for each preprocessed template, compare the path and calculate the max score
-        b = dollar.Dollar.prefs["square_size"]
+        b = (0.5 * math.sqrt(2.0 * math.pow(dollar.Dollar.prefs["square_size"], 2)))
         tprime = ""
         hd = (0.5 * math.sqrt(2.0 * math.pow(dollar.Dollar.prefs["square_size"], 2)))
         for t_key in self.preprocessed.keys():
