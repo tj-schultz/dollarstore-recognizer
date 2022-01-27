@@ -98,7 +98,8 @@ class MainApplication(tk.Frame):
         info_text = "This is a tkinter application\n running on python %s and developed for open use by\n"\
         "TJ Schultz. 2022\n" \
         "\n\nDrag the mouse pointer to plot a single stroke path. Clicking again begins a new path.\n" \
-        "Click the checkbox to plot the path points." % (sys.version)
+        "After drawing, the recognizer will attempt to guess what you drew.\n"\
+                "Click the checkbox to plot the path points." % (sys.version)
 
         github_image = tk.PhotoImage(file=os.path.join('resources', 'qr.png'))
 
@@ -136,9 +137,6 @@ class MainApplication(tk.Frame):
         self.score_entry.insert(0, round(results[1], 2))
         self.match_entry.delete(0, tk.END)
         self.match_entry.insert(0, results[0])
-
-        self.pathcanvas.draw_points(self.R.preprocess(self.pathcanvas.path), "blue")
-        self.pathcanvas.draw_points(self.R.preprocessed[results[0]], "red")
 
 
 if __name__ == "__main__":
