@@ -29,11 +29,8 @@ class MainApplication(tk.Frame):
         ## GUI -- Canvas
 
         ## define Canvas properties
-        C_WIDTH = 300
-        C_HEIGHT = 300
-
-        R_WIDTH = 250
-        R_HEIGHT = 250
+        C_WIDTH = 500
+        C_HEIGHT = 500
 
         self.canvas = tk.Canvas(root, width=C_WIDTH, height=C_HEIGHT, bg="lightgrey", \
                                          highlightthickness=5, highlightbackground="medium sea green")
@@ -54,11 +51,15 @@ class MainApplication(tk.Frame):
 
         ## GUI -- Recognizer display
         self.recog_frame = tk.Frame(root)
+        self.score_label = tk.Label(self.recog_frame, text="Score:")
         self.score_entry = tk.Entry(self.recog_frame, width=8)
+        self.match_label = tk.Label(self.recog_frame, text="Best Match:")
         self.match_entry = tk.Entry(self.recog_frame, width=32)
         self.recog_frame.pack(side="top")
-        self.match_entry.pack(side="bottom")
-        self.score_entry.pack(side="bottom")
+        self.match_label.pack(side="left")
+        self.match_entry.pack(side="left")
+        self.score_label.pack(side="left")
+        self.score_entry.pack(side="left")
 
         ## GUI -- Path length display
         self.length_frame = tk.Frame(root)
@@ -136,6 +137,9 @@ class MainApplication(tk.Frame):
         self.match_entry.delete(0, tk.END)
         self.match_entry.insert(0, results[0])
 
+        self.pathcanvas.draw_points(self.R.preprocess(self.pathcanvas.path), "blue")
+        self.pathcanvas.draw_points(self.R.preprocessed[results[0]], "red")
+
 
 if __name__ == "__main__":
     ## tkinter application root
@@ -146,8 +150,8 @@ if __name__ == "__main__":
 
     ## define window properties
     root.title("dollarstore-recognizer")
-    root.minsize(300, 700)
-    root.maxsize(300, 700)
+    root.minsize(500, 700)
+    root.maxsize(500, 700)
 
     ## organize root geometry as window
     MainApplication(root).pack(side="top", fill="both", expand=True)
