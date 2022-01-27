@@ -27,6 +27,7 @@ class Recognizer():
             ## preprocess and replace the point list with the Path object
             new_path = self.preprocess(new_path)
             self.preprocessed[t_key] = new_path
+            #print(t_key, len(self.preprocessed[t_key]))
 
 
     ## returns distance between points in non-pixel units
@@ -45,10 +46,11 @@ class Recognizer():
 
     ## resamples a path into n evenly spaced points
     def resample(self, path, n):
-        if n <= 0:
-            return []
+        if n <= 1:
+            return path
 
         interval = self.path_length(path) / (n - 1)
+        print("interval ", interval)
         dist = 0
 
         ## create a copy path
@@ -58,7 +60,8 @@ class Recognizer():
         new_path = pth.Path(path.parsed_path[0])
 
         i = 1
-        while i < len(copy) - 1:
+        while i < len(copy) - 1 and len(new_path) < n:
+            print(i, len(copy), len(new_path))
 
             ## get points
             p1 = path.parsed_path[i]
@@ -93,11 +96,11 @@ class Recognizer():
         for p in path.parsed_path:
             if p.x <= x_min:
                 x_min = p.x
-            elif p.x >= x_max:
+            elif p.x > x_max:
                 x_max = p.x
             if p.y <= y_min:
                 y_min = p.y
-            elif p.y >= y_max:
+            elif p.y > y_max:
                 y_max = p.y
         return (x_min, x_max, y_min, y_max)
 
@@ -140,11 +143,13 @@ class Recognizer():
         b_width = bbox[1] - bbox[0]
         b_height = bbox[3] - bbox[2]
 
+        print(b_width, b_height)
+
         new_path = pth.Path()
 
         for p in path.parsed_path:
             qx = p.x * (size / b_width)
-            qy = p.y * (size / b_width)
+            qy = p.y * (size / b_height)
             new_path.stitch(pth.Point(qx, qy))
 
         return new_path
@@ -167,7 +172,7 @@ class Recognizer():
         d = 0
         for i in range(min(len(A), len(B))):
             d = d + self.distance(A.parsed_path[i], B.parsed_path[i])
-        return d / len(A)
+        return d / min(len(A), len(B))
 
     ## distance at angle
     def distance_at_angle(self, path, template, theta):
@@ -219,6 +224,9 @@ class Recognizer():
         ## scale to size box
         new_path = self.scale_to_square(new_path, dollar.Dollar.prefs["square_size"])
 
+        ## translate to origin
+        new_path = self.translate_to_origin(new_path)
+
         return new_path
 
     ## recognizer method -- combines steps in performing scoring
@@ -231,17 +239,18 @@ class Recognizer():
         candidate = self.preprocess(path)
 
         ## for each preprocessed template, compare the path and calculate the max score
-        b = -1
+        b = dollar.Dollar.prefs["square_size"]
         tprime = ""
+        hd = (0.5 * math.sqrt(2.0 * math.pow(dollar.Dollar.prefs["square_size"], 2)))
         for t_key in self.preprocessed.keys():
 
             d = self.distance_best_angle(candidate, self.preprocessed[t_key])
+            print(t_key, (1.0 - (d / hd)))
             ## if a new best match is found
-            if d < b or b < 0:
+            if d < b:
                 b = d
                 tprime = t_key  ## set t_key for output
 
         ## calculate final score
-        score = 1 + (1.0 - b) /\
-                (0.5 * math.sqrt(2.0 * math.pow(dollar.Dollar.prefs["square_size"], 2)))
+        score = 1.0 - (b / hd)
         return (tprime, score)
