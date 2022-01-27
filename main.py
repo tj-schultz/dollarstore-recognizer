@@ -106,7 +106,7 @@ class MainApplication(tk.Frame):
         info_label = tk.Label(window, text=info_text, justify="left")
         #github_label = tk.Label(window, image=github_image)
         info_label.pack(side="top", fill="both", expand=False)
-        github_label.pack(side="top", fill="both", expand=False)
+        #github_label.pack(side="top", fill="both", expand=False)
 
     ## returns pointer position
     def get_pointer_pos(self, event):
