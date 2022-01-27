@@ -89,6 +89,9 @@ class MainApplication(tk.Frame):
         self.info_button.pack(side="right")
         self.info_frame.pack(side="bottom")
 
+        ## recognizer instantiation
+        self.R = rec.Recognizer(dollar.Dollar.templates)
+
     ## prompts new info window for app
     def info_window(self):
         window = tk.Toplevel()
@@ -120,23 +123,21 @@ class MainApplication(tk.Frame):
         ## stops pen
         self.pathcanvas.pen(event)
 
-        ## recognize
-        R = rec.Recognizer()
-        R.recognize(self.pathcanvas.path)
-
         ## updates previous path length display
         self.length_entry.delete(0, tk.END)
-        self.length_entry.insert(0, R.path_length(self.pathcanvas.path).__format__(.2))
+        self.length_entry.insert(0, round(self.R.path_length(self.pathcanvas.path), 2))
         self.length_entry.update()
 
         ## resample path
-        self.pathcanvas.resampled = R.resample(self.pathcanvas.path, dollar.Dollar.prefs["n_points"])
+        self.pathcanvas.resampled = self.R.resample(self.pathcanvas.path, dollar.Dollar.prefs["n_points"])
         #self.recog_pathcanvas.path = R.translate_to_origin(R.scale_to_square(path.Path(dollar.Dollar.templates["arrow"]), 250))
         #self.recog_pathcanvas.draw_points(self.recog_pathcanvas.path, cvs.line_pref["recog_fill"])
 
         ## draws points if show_points
         if self.show_points.get():
             self.pathcanvas.draw_points(self.pathcanvas.resampled, cvs.line_pref["point_fill"])
+
+        self.R.recognize(self.pathcanvas.path)
 
 if __name__ == "__main__":
     ## tkinter application root
