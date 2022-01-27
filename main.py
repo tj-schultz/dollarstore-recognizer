@@ -1,8 +1,8 @@
 """
 name: main.py -- dollarstore-recognizer
 description: An implementation of the $-recognizer in python with a Canvas input
-authors: TJ Schultz, []
-date: 1/20/22
+authors: TJ Schultz, Skylar McCain
+date: 1/27/22
 """
 import os.path
 import time
@@ -93,18 +93,18 @@ class MainApplication(tk.Frame):
         window.title("Info")
 
         ## open icon
-        window.iconbitmap(os.path.join('resources', 'icon.ico'))
+        #window.iconbitmap(os.path.join('resources', 'icon.ico'))
 
         info_text = "This is a tkinter application\n running on python %s and developed for open use by\n"\
-        "TJ Schultz. 2022\n" \
+        "TJ Schultz, Skylar McCain. 2022\n" \
         "\n\nDrag the mouse pointer to plot a single stroke path. Clicking again begins a new path.\n" \
         "After drawing, the recognizer will attempt to guess what you drew.\n"\
                 "Click the checkbox to plot the path points." % (sys.version)
 
-        github_image = tk.PhotoImage(file=os.path.join('resources', 'qr.png'))
+        #github_image = tk.PhotoImage(file=os.path.join('resources', 'qr.png'))
 
         info_label = tk.Label(window, text=info_text, justify="left")
-        github_label = tk.Label(window, image=github_image)
+        #github_label = tk.Label(window, image=github_image)
         info_label.pack(side="top", fill="both", expand=False)
         github_label.pack(side="top", fill="both", expand=False)
 
@@ -144,7 +144,7 @@ if __name__ == "__main__":
     root = tk.Tk()
 
     ## open icon
-    root.iconbitmap(os.path.join('resources', 'icon.ico'))
+    #root.iconbitmap(os.path.join('resources', 'icon.ico'))
 
     ## define window properties
     root.title("dollarstore-recognizer")
