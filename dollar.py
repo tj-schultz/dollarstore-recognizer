@@ -1,8 +1,8 @@
 """
 name: dollar.py -- dollarstore-recognizer
 description: class definitions containing template paths for the $1 Recognizer
-authors: TJ Schultz, []
-date: 1/25/22
+authors: TJ Schultz, Skylar McCain
+date: 1/27/22
 """
 from path import Point
 
