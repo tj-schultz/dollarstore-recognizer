@@ -12,18 +12,23 @@ import dollar
 ## recognizer class containing canvas display methods for
 class Recognizer():
 
-    ##
-    class RotationSet():
+    preprocessed = {}
 
-        ## for this particular project, the rotations are through 90, 180, and 270
-        rotations = [90, 180, 270]
+    ## preprocess the template set on init
+    def __init__(self, template_dict):
 
-        def __init(self, templates):
+        ## copy template dictionary
+        self.preprocessed = template_dict
 
+        for t_key in template_dict.keys():
+            ## create a Path object
+            new_path = pth.Path(template_dict[t_key])
 
-        def rotate_path(self, path):
-            for
-    def __init__(self):
+            ## preprocess and replace the point list with the Path object
+            new_path = self.preprocess(new_path)
+            self.preprocessed[t_key] = new_path
+
+        print(self.preprocessed)
 
 
     ## returns distance between points in non-pixel units
@@ -159,6 +164,53 @@ class Recognizer():
 
         return new_path
 
+    ## sum and average distance between two point paths
+    def path_distance(self, A, B):
+        d = 0
+        print(len(A), len(B))
+        for i in range(len(A)):
+            d = d + self.distance(A.parsed_path[i], B.parsed_path[i])
+        return d / len(A)
+
+    ## distance at angle
+    def distance_at_angle(self, path, template, theta):
+        new_path = self.rotate_by(path, theta)
+        d = self.path_distance(new_path, template)
+        return d
+
+
+    ## distance at best angle with default parameters for theta a, b and delta
+    def distance_best_angle(self, path, template, atheta=-45, btheta=45, delta=2):
+
+        ## calculate golden const
+        PHI = round(0.5 * (-1.0 + math.sqrt(5)), 5)
+
+        ## calculated variables
+        x1 = (PHI * atheta) + ((1.0 - PHI) * btheta)
+        f1 = self.distance_at_angle(path, template, x1)
+
+        x2 = ((1.0 - PHI) * atheta) + (PHI * Btheta)
+        f2 = self.distance_at_angle(path, template, x2)
+
+        ## find the optimum angle using delta
+        while btheta - atheta > delta:
+            if f1 < f2:
+                btheta = x2
+                x2 = x1
+                f2 = f1
+                x1 = (PHI * atheta) + ((1.0 - PHI) * btheta)
+                f1 = self.distance_at_angle(path, template, x1)
+            else:
+                atheta = x1
+                x1 = x2
+                f1 = f2
+                x2 = ((1.0 - PHI) * atheta) + (PHI * btheta)
+                f2 = self.distance_at_angle(path, template, x2)
+
+        ## return the minimum distance from f1, f2
+        return min(f1, f2)
+
+
     ## preprocess path to compare
     def preprocess(self, path):
         ## resample the points
@@ -170,8 +222,30 @@ class Recognizer():
         ## scale to size box
         new_path = self.scale_to_square(new_path, dollar.Dollar.prefs["square_size"])
 
+        return new_path
+
     ## recognizer method -- combines steps in performing scoring
     def recognize(self, path):
 
-        ## preprocess the candidate path
+        if len(path) < 1:
+            return
+
+        ## preprocess the candidate path into a Path object
         candidate = self.preprocess(path)
+
+        ## for each preprocessed template, compare the path and calculate the max score
+        b = -1
+        tprime = ""
+        for t_key in self.preprocessed.keys():
+            d = self.distance_best_angle(path, self.preprocessed[t_key])
+
+            ## if a new best match is found
+            if d < b or b < 0:
+                b = d
+                tprime = t_key  ## set t_key for output
+
+        ## calculate final score
+        score = (1.0 - b) /\
+                (0.5 * math.sqrt(2.0 * math.pow(dollar.Dollar.prefs["square_size"], 2)))
+        print(score)
+        return (tprime, score)
