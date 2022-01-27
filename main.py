@@ -55,16 +55,10 @@ class MainApplication(tk.Frame):
         ## GUI -- Recognizer display
         self.recog_frame = tk.Frame(root)
         self.score_entry = tk.Entry(self.recog_frame, width=8)
+        self.match_entry = tk.Entry(self.recog_frame, width=32)
         self.recog_frame.pack(side="top")
+        self.match_entry.pack(side="bottom")
         self.score_entry.pack(side="bottom")
-
-        ## recognizer output canvas
-        self.recog_canvas = tk.Canvas(self.recog_frame, width=R_WIDTH, height=R_HEIGHT, bg="lightgrey", \
-                                      highlightthickness=3, highlightbackground="chocolate1")
-
-        self.recog_pathcanvas = cvs.PathCanvas(root, self.recog_canvas, R_WIDTH, R_HEIGHT, True)
-
-        self.recog_canvas.pack(side="top", fill="both", expand=False)
 
         ## GUI -- Path length display
         self.length_frame = tk.Frame(root)
@@ -130,14 +124,18 @@ class MainApplication(tk.Frame):
 
         ## resample path
         self.pathcanvas.resampled = self.R.resample(self.pathcanvas.path, dollar.Dollar.prefs["n_points"])
-        #self.recog_pathcanvas.path = R.translate_to_origin(R.scale_to_square(path.Path(dollar.Dollar.templates["arrow"]), 250))
-        #self.recog_pathcanvas.draw_points(self.recog_pathcanvas.path, cvs.line_pref["recog_fill"])
 
         ## draws points if show_points
         if self.show_points.get():
             self.pathcanvas.draw_points(self.pathcanvas.resampled, cvs.line_pref["point_fill"])
 
-        self.R.recognize(self.pathcanvas.path)
+        ## calculate results and update results entries
+        results = self.R.recognize(self.pathcanvas.path)
+        self.score_entry.delete(0, tk.END)
+        self.score_entry.insert(0, round(results[1], 2))
+        self.match_entry.delete(0, tk.END)
+        self.match_entry.insert(0, results[0])
+
 
 if __name__ == "__main__":
     ## tkinter application root
