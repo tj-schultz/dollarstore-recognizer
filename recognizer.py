@@ -28,8 +28,6 @@ class Recognizer():
             new_path = self.preprocess(new_path)
             self.preprocessed[t_key] = new_path
 
-        print(self.preprocessed)
-
 
     ## returns distance between points in non-pixel units
     def distance(self, p1, p2):
@@ -167,8 +165,7 @@ class Recognizer():
     ## sum and average distance between two point paths
     def path_distance(self, A, B):
         d = 0
-        print(len(A), len(B))
-        for i in range(len(A)):
+        for i in range(min(len(A), len(B))):
             d = d + self.distance(A.parsed_path[i], B.parsed_path[i])
         return d / len(A)
 
@@ -189,7 +186,7 @@ class Recognizer():
         x1 = (PHI * atheta) + ((1.0 - PHI) * btheta)
         f1 = self.distance_at_angle(path, template, x1)
 
-        x2 = ((1.0 - PHI) * atheta) + (PHI * Btheta)
+        x2 = ((1.0 - PHI) * atheta) + (PHI * btheta)
         f2 = self.distance_at_angle(path, template, x2)
 
         ## find the optimum angle using delta
@@ -237,15 +234,14 @@ class Recognizer():
         b = -1
         tprime = ""
         for t_key in self.preprocessed.keys():
-            d = self.distance_best_angle(path, self.preprocessed[t_key])
 
+            d = self.distance_best_angle(candidate, self.preprocessed[t_key])
             ## if a new best match is found
             if d < b or b < 0:
                 b = d
                 tprime = t_key  ## set t_key for output
 
         ## calculate final score
-        score = (1.0 - b) /\
+        score = 1 + (1.0 - b) /\
                 (0.5 * math.sqrt(2.0 * math.pow(dollar.Dollar.prefs["square_size"], 2)))
-        print(score)
         return (tprime, score)
