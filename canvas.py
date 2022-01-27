@@ -78,28 +78,30 @@ class PathCanvas():
 
     ## draws polyline on canvas for last two points
     def draw_polyline(self, event):
+        if not self.plotting:
+            self.plotting = True
+            ## simply plot the line in one pass
+            if event == None:
+                for i in range(len(self.path)-1):
+                    self.canvas.create_line(self.path.parsed_path[-(i + 2)].x, self.path.parsed_path[-(i + 2)].y, \
+                                            self.path.parsed_path[-(i + 1)].x, self.path.parsed_path[-(i + 1)].y, \
+                                            width=line_pref["width"], fill=line_pref["fill"], \
+                                            splinesteps=line_pref["ssteps"], capstyle="round")
+            ## prevents drawing beyond border during active drawing
+            elif event.x <= self.C_WIDTH and event.y <= self.C_HEIGHT:
 
-        ## simply plot the line in one pass
-        if event == None:
-            for i in range(len(self.path)-1):
-                self.canvas.create_line(self.path.parsed_path[-(i + 2)].x, self.path.parsed_path[-(i + 2)].y, \
-                                        self.path.parsed_path[-(i + 1)].x, self.path.parsed_path[-(i + 1)].y, \
-                                        width=line_pref["width"], fill=line_pref["fill"], \
-                                        splinesteps=line_pref["ssteps"], capstyle="round")
-        ## prevents drawing beyond border during active drawing
-        elif event.x <= self.C_WIDTH and event.y <= self.C_HEIGHT:
+                ## log motion
+                self.log_motion(event.x, event.y)
 
-            ## log motion
-            self.log_motion(event.x, event.y)
-
-            ## if 2 or more points in path, draw a line with the last two points
-            if len(self.path) > 1 and self.down:
-                self.canvas.create_line(self.path.parsed_path[-2].x, self.path.parsed_path[-2].y, \
-                                        self.path.parsed_path[-1].x, self.path.parsed_path[-1].y,\
-                                        width=line_pref["width"], fill=line_pref["fill"],\
-                                        splinesteps=line_pref["ssteps"], capstyle="round")
-            ## update the Canvas object
-            self.canvas.update()
+                ## if 2 or more points in path, draw a line with the last two points
+                if len(self.path) > 1 and self.down:
+                    self.canvas.create_line(self.path.parsed_path[-2].x, self.path.parsed_path[-2].y, \
+                                            self.path.parsed_path[-1].x, self.path.parsed_path[-1].y,\
+                                            width=line_pref["width"], fill=line_pref["fill"],\
+                                            splinesteps=line_pref["ssteps"], capstyle="round")
+                ## update the Canvas object
+                self.canvas.update()
+            self.plotting = False
 
     ## draws points on canvas for completed path
     def draw_points(self, path, color="black"):
