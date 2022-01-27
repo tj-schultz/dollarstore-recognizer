@@ -2,8 +2,8 @@
 name: recognizer.py -- dollarstore-recognizer
 description: Recognizer class with member functions to resample, rotate, scale/translate paths and
 run calculations to determine the score for a particular recognizer
-authors: TJ Schultz, []
-date: 1/26/22
+authors: TJ Schultz, Skylar McCain
+date: 1/27/22
 """
 import math
 import path as pth
@@ -242,7 +242,6 @@ class Recognizer():
         for t_key in self.preprocessed.keys():
 
             d = self.distance_best_angle(candidate, self.preprocessed[t_key])
-            print(t_key, (1.0 - (d / hd)))
             ## if a new best match is found
             if d < b:
                 b = d
