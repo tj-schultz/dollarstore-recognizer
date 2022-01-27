@@ -26,6 +26,7 @@ class PathCanvas():
 
     ## class members
     down = False
+    plotting = False
     path = pth.Path()
     resampled = pth.Path()
 
