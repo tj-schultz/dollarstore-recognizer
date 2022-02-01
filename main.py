@@ -14,8 +14,6 @@ import dollar
 import path
 import recognizer as rec
 
-GUI = False
-
 ## main application class defined for tkinter
 class MainApplication(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -142,21 +140,19 @@ class MainApplication(tk.Frame):
 
 if __name__ == "__main__":
 
-    ## online recognition
-    if True:
-        ## tkinter application root
-        root = tk.Tk()
+    ## tkinter application root
+    root = tk.Tk()
 
-        ## open icon
-        #root.iconbitmap(os.path.join('resources', 'icon.ico'))
+    ## open icon
+    #root.iconbitmap(os.path.join('resources', 'icon.ico'))
 
-        ## define window properties
-        root.title("dollarstore-recognizer")
-        root.minsize(500, 700)
-        root.maxsize(500, 700)
+    ## define window properties
+    root.title("dollarstore-recognizer")
+    root.minsize(500, 700)
+    root.maxsize(500, 700)
 
-        ## organize root geometry as window
-        MainApplication(root).pack(side="top", fill="both", expand=True)
+    ## organize root geometry as window
+    MainApplication(root).pack(side="top", fill="both", expand=True)
 
-        ## run loop
-        root.mainloop()
+    ## run loop
+    root.mainloop()
