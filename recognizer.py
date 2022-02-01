@@ -15,7 +15,7 @@ class Recognizer():
     preprocessed = {}
 
     ## preprocess the template set on init
-    def __init__(self, template_dict):
+    def __init__(self, template_dict={}):
 
         ## copy template dictionary
         self.preprocessed = template_dict
@@ -28,7 +28,6 @@ class Recognizer():
             new_path = self.preprocess(new_path)
             self.preprocessed[t_key] = new_path
             #print(t_key, len(self.preprocessed[t_key]))
-
 
     ## returns distance between points in non-pixel units
     def distance(self, p1, p2):
