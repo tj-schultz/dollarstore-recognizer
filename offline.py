@@ -11,6 +11,8 @@ import xml.dom.minidom as xmlmd
 import csv
 import os
 import path as pth
+import recognizer
+import dollar
 
 ## list of path types to read using filenames with '01-10' appended
 xml_filetypes = ["arrow", "caret", "check", "circle", "delete_mark", "left_curly_brace",\
@@ -20,6 +22,8 @@ xml_filetypes = ["arrow", "caret", "check", "circle", "delete_mark", "left_curly
 
 ## base dictionary of unprocessed input Path objects from xml
 xml_base = {}
+
+
 
 ## reads a single xml file as a DOM element, records gesture and returns the path object
 def readXMLpath(filepath):
@@ -37,8 +41,8 @@ def readXMLpath(filepath):
 
         ## get attributes and build path object
         for point in point_tags:
-            x = point.getAttribute("X")
-            y = point.getAttribute("Y")
+            x = int(point.getAttribute("X"))
+            y = int(point.getAttribute("Y"))
             xml_path.stitch(pth.Point(x, y))
 
     except:
@@ -59,11 +63,16 @@ if __name__ == "__main__":
 
                 ## read as DOM -- append to dictionary
                 xml_base[user_key][prefix][file_key] = readXMLpath(\
-                    os.path.join("xml", user_key, "medium", "%s%s.xml"\
+                    os.path.join("xml", user_key, "slow", "%s%s.xml"\
                                  % (prefix, file_key))
                 )
 
+
+    ## debug
     for user in xml_base.keys():
         for gesture in xml_base[user]:
             for id in xml_base[user][gesture].keys():
+                print(user, gesture, id, "length:", len(xml_base[user][gesture][id]))
+                before = xml_base[user][gesture][id]
+                xml_base[user][gesture][id] = recognizer.Recognizer().preprocess(before)
                 print(user, gesture, id, "length:", len(xml_base[user][gesture][id]))
