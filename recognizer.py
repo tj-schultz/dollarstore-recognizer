@@ -209,8 +209,26 @@ class Recognizer():
         return min(f1, f2)
 
 
+    ## create a vector object from a path
+    def vectorize(self, path, o_sensitive):
+        centered = self.translate_to_origin(path)
+        theta = math.atan(path.parsed_path[0]., path.parsed_path[0].x)
+        delta = 0
+        if o_sensitive:
+            base_orientation = (math.pi / 4.0) *\
+                               math.floor((theta + (math.pi / 8.0)))
+            delta = base_orientation - theta
+        else:
+            delta = -1.0 * theta
+        sum = 0
+        vector = []
+        for p in centered:
+            qx = p.x * math.cos(delta) - p.y * math.sin(delta)
+            qy = p.y * math.cos(delta) - p.x * math.sin(delta)
+            vec
+
     ## preprocess path to compare
-    def preprocess(self, path):
+    def preprocess(self, path, protractor=False):
         ## resample the points
         new_path = self.resample(path, dollar.Dollar.prefs["n_points"])
 
