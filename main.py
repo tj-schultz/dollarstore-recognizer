@@ -84,7 +84,7 @@ class MainApplication(tk.Frame):
         self.info_frame.pack(side="bottom")
 
         ## recognizer instantiation
-        self.R = rec.Recognizer(dollar.Dollar.templates)
+        self.R = rec.Recognizer(dollar.Dollar.templates, protractor=False)
 
     ## prompts new info window for app
     def info_window(self):
@@ -131,11 +131,11 @@ class MainApplication(tk.Frame):
             self.pathcanvas.draw_points(self.pathcanvas.resampled, cvs.line_pref["point_fill"])
 
         ## calculate results and update results entries
-        results = self.R.recognize(self.pathcanvas.path)
+        results = self.R.recognize(self.pathcanvas.path, preprocess=True)
         self.score_entry.delete(0, tk.END)
-        self.score_entry.insert(0, round(results[1], 2))
+        self.score_entry.insert(0, round(results[0][1], 2))
         self.match_entry.delete(0, tk.END)
-        self.match_entry.insert(0, results[0])
+        self.match_entry.insert(0, results[0][0])
 
 
 if __name__ == "__main__":
