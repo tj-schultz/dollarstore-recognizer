@@ -22,7 +22,7 @@ line_pref = {
 class PathCanvas():
 
     ## time constant to wait before parsing a new x, y value from mouse motion
-    PATH_PARSE_CONST = 0.01
+    PATH_PARSE_CONST = 0.001
 
     ## class members
     down = False
