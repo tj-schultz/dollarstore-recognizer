@@ -11,7 +11,7 @@ import xml.dom.minidom as xmlmd
 import csv
 import os
 import path as pth
-import recognizer
+import recognizer as rec
 import dollar
 
 ## list of path types to read using filenames with '01-10' appended
@@ -26,7 +26,7 @@ xml_base = {}
 
 
 ## reads a single xml file as a DOM element, records gesture and returns the path object
-def readXMLpath(filepath):
+def read_XML_path(filepath):
 
     try:
         ## grab root of file
@@ -62,17 +62,17 @@ if __name__ == "__main__":
                 file_key = str(num).zfill(2)
 
                 ## read as DOM -- append to dictionary
-                xml_base[user_key][prefix][file_key] = readXMLpath(\
+                xml_base[user_key][prefix][file_key] = read_XML_path(\
                     os.path.join("xml", user_key, "slow", "%s%s.xml"\
                                  % (prefix, file_key))
                 )
 
 
-    ## debug
-    for user in xml_base.keys():
-        for gesture in xml_base[user]:
-            for id in xml_base[user][gesture].keys():
-                print(user, gesture, id, "length:", len(xml_base[user][gesture][id]))
-                before = xml_base[user][gesture][id]
-                xml_base[user][gesture][id] = recognizer.Recognizer().preprocess(before)
+    ## instantiate the recognizer and preprocess the template dictionary recursively
+    R = rec.Recognizer(xml_base)
+
+    ## debug -- vectors should be of length 2 * 64 = 128
+    for user in R.preprocessed:
+        for gesture in R.preprocessed[user]:
+            for id in R.preprocessed[user][gesture].keys():
                 print(user, gesture, id, "length:", len(xml_base[user][gesture][id]))
