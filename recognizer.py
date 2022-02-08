@@ -13,21 +13,15 @@ import dollar
 class Recognizer():
 
     preprocessed = {}
-
+    use_protractor = False
     ## preprocess the template set on init
-    def __init__(self, template_dict={}):
+    def __init__(self, template_dict={}, protractor=False):
 
-        ## copy template dictionary
-        self.preprocessed = template_dict
+        self.use_protractor = protractor
 
-        for t_key in template_dict.keys():
-            ## create a Path object
-            new_path = pth.Path(template_dict[t_key])
+        ## recursively call preproccess to build the sub-dictionary
+        self.preprocessed = self.recursive_preprocess(template_dict)
 
-            ## preprocess and replace the point list with the Path object
-            new_path = self.preprocess(new_path)
-            self.preprocessed[t_key] = new_path
-            #print(t_key, len(self.preprocessed[t_key]))
 
     ## returns distance between points in non-pixel units
     def distance(self, p1, p2):
@@ -89,16 +83,16 @@ class Recognizer():
 
     ## returns tuple of point coordinate mins and max
     def bbox(self, path):
-        x_min, x_max, y_min, y_max = (0, 0, 0, 0)
+        x_min, x_max, y_min, y_max = (math.inf, 0, math.inf, 0)
 
         for p in path.parsed_path:
             if p.x <= x_min:
                 x_min = p.x
-            elif p.x > x_max:
+            if p.x > x_max:
                 x_max = p.x
             if p.y <= y_min:
                 y_min = p.y
-            elif p.y > y_max:
+            if p.y > y_max:
                 y_max = p.y
         return (x_min, x_max, y_min, y_max)
 
@@ -129,7 +123,7 @@ class Recognizer():
     ## rotates the points so their indicative angle is 0 degrees
     def rotate_to_zero(self, path):
         cent = self.centroid(path)
-        theta = math.atan((cent.y - path.parsed_path[0].y) / (cent.x - path.parsed_path[0].x))
+        theta = math.atan2((cent.y - path.parsed_path[0].y), (cent.x - path.parsed_path[0].x))
         new_path = self.rotate_by(path, (theta * -1.0))
         return new_path
 
@@ -209,10 +203,10 @@ class Recognizer():
         return min(f1, f2)
 
 
-    ## create a vector object from a path
+    ## create a normalized vector object of length 2n from a path
     def vectorize(self, path, o_sensitive):
         centered = self.translate_to_origin(path)
-        theta = math.atan(path.parsed_path[0]., path.parsed_path[0].x)
+        theta = math.atan2(path.parsed_path[0].y, path.parsed_path[0].x)
         delta = 0
         if o_sensitive:
             base_orientation = (math.pi / 4.0) *\
@@ -222,15 +216,42 @@ class Recognizer():
             delta = -1.0 * theta
         sum = 0
         vector = []
-        for p in centered:
+        for p in centered.parsed_path:
+            ## find and sum new x and y components to the vector
             qx = p.x * math.cos(delta) - p.y * math.sin(delta)
             qy = p.y * math.cos(delta) - p.x * math.sin(delta)
-            vec
+            vector.append(qx)
+            vector.append(qy)
+
+            ## add the sum for this point
+            sum = sum + (qx * qx) + (qy * qy)
+
+        ## normalize
+        magnitude = math.sqrt(sum)
+        for i in range(len(vector)):
+            vector[i] = vector[i] / magnitude
+
+        return vector
+
+    ## optimal cosine distance function to calculate the OCD for two vectors
+    def opt_cos_distance(self, u, v):
+        a = 0
+        b = 0
+        for i in range(0, len(u), 2):
+            a = a + (u[i] * v[i]) + (u[i + 1] * v[i + 1])
+            b = b + (u[i] * v[i + 1]) - (v[i] * u[i + 1])
+        theta = math.atan(b / a)
+        return math.acos(a * math.cos(theta) + b * math.sin(theta))
+
 
     ## preprocess path to compare
-    def preprocess(self, path, protractor=False):
+    def preprocess(self, path):
         ## resample the points
         new_path = self.resample(path, dollar.Dollar.prefs["n_points"])
+
+        ## performing protractor preprocessing
+        if self.use_protractor:
+            return self.vectorize(new_path, False)
 
         ## rotate to indicative angle
         new_path = self.rotate_to_zero(new_path)
@@ -243,27 +264,56 @@ class Recognizer():
 
         return new_path
 
-    ## recognizer method -- combines steps in performing scoring
-    def recognize(self, path):
+    ## recursive preprocessing function for path dictionaries
+    def recursive_preprocess(self, template_dict={}):
+        for k, v in template_dict.items():
+            if isinstance(v, dict):
+                ## recursively call constructor to build the sub-dictionary
+                template_dict[k] = self.recursive_preprocess(template_dict[k])
+            else:
+                ## preprocess and replace the Path object
+                new_path = self.preprocess(template_dict[k])
+                template_dict[k] = new_path
 
+        ## copy template dictionary at next highest level of recursion
+        return template_dict
+
+    ## recognizer method -- combines steps in performing scoring and can alternatively be
+    def recognize(self, path, preprocess=False):
+        ## scores array
+        scores = []
+        templates = self.preprocessed
         if len(path) < 1:
             return
 
         ## preprocess the candidate path into a Path object
-        candidate = self.preprocess(path)
+        candidate = path
+        if preprocess:
+            candidate = self.preprocess(path)
 
-        ## for each preprocessed template, compare the path and calculate the max score
-        b = (0.5 * math.sqrt(2.0 * math.pow(dollar.Dollar.prefs["square_size"], 2)))
-        tprime = ""
-        hd = (0.5 * math.sqrt(2.0 * math.pow(dollar.Dollar.prefs["square_size"], 2)))
-        for t_key in self.preprocessed.keys():
 
-            d = self.distance_best_angle(candidate, self.preprocessed[t_key])
-            ## if a new best match is found
-            if d < b:
-                b = d
-                tprime = t_key  ## set t_key for output
+        ## if recognizing according to protractor
+        if self.use_protractor:
+            max = 0
+            for t_key in templates.keys():
+                d = self.opt_cos_distance(templates[t_key], candidate)
+                dscore = 1.0 / d
+                scores.append((t_key, dscore))
+                if dscore > max:
+                    max = dscore
+            score = max
+        else:
+            ## for each preprocessed template, compare the path and calculate the max score
+            b = (0.5 * math.sqrt(2.0 * math.pow(dollar.Dollar.prefs["square_size"], 2)))
 
-        ## calculate final score
-        score = 1.0 - (b / hd)
-        return (tprime, score)
+            hd = (0.5 * math.sqrt(2.0 * math.pow(dollar.Dollar.prefs["square_size"], 2)))
+            for t_key in templates.keys():
+                ## get distance
+                d = self.distance_best_angle(candidate, templates[t_key])
+
+                ## calculate score
+                dscore = 1.0 - (d / hd)
+                scores.append((t_key, dscore))
+        scores.sort(key=lambda y: y[1], reverse=True)
+        print(scores)
+        return scores
