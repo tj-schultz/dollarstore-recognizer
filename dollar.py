@@ -9,7 +9,7 @@ from path import Point, Path
 ## Dollar class with template path.Path() dictionary and accessor methods
 class Dollar():
     prefs = {
-        "n_points": 65,
+        "n_points": 64,
         "square_size": 250
     }
     templates = {
