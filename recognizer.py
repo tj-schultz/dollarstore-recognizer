@@ -43,29 +43,31 @@ class Recognizer():
             return path
 
         interval = self.path_length(path) / (n - 1)
+        ## fix undershot paths
+        interval *= 0.975
+        print("Resample: Pathlength - intn: %s\t%s" % (self.path_length(path), interval))
         dist = 0
 
         ## create a copy path
         copy = path
 
         ## create return path
-        new_path = pth.Path(path.parsed_path[0])
+        new_path = pth.Path()
 
-        i = 1
-        while i < len(copy) - 1 and len(new_path) < n:
+        i = 0
+        while i < len(copy.parsed_path)-1:
             #print(i, len(copy), len(new_path))
 
-            ## get points
-            p1 = path.parsed_path[i]
-            p2 = path.parsed_path[i + 1]
+            p = copy.parsed_path[i]
+            q = copy.parsed_path[i+1]
 
             ## calc distance
-            d = self.distance(p1, p2)
+            d = self.distance(p, q)
             if dist + d > interval:
 
                 ## interpolate new values
-                qx = p1.x + (((interval - dist) / d) * (p2.x - p1.x))
-                qy = p1.y + (((interval - dist) / d) * (p2.y - p1.y))
+                qx = p.x + (((interval - dist) / d) * (q.x - p.x))
+                qy = p.y + (((interval - dist) / d) * (q.y - p.y))
                 q = pth.Point(qx, qy)
 
                 ## stitch point to new path and copy point to copy path
@@ -78,7 +80,7 @@ class Recognizer():
                 ## add distance
                 dist = dist + d
             i = i + 1
-
+        print("\Path - Preprocessed:%s\t%s\t" % (len(path), len(new_path)))
         return new_path
 
     ## returns tuple of point coordinate mins and max
@@ -319,5 +321,5 @@ class Recognizer():
                 dscore = 1.0 - (d / hd)
                 scores.append((t_key, dscore))
         scores.sort(key=lambda y: y[1], reverse=True)
-        print(scores)
+        #print(scores)
         return scores
