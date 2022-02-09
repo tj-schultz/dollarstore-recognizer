@@ -45,7 +45,6 @@ class Recognizer():
         interval = self.path_length(path) / (n - 1)
         ## fix undershot paths
         interval *= 0.975
-        print("Resample: Pathlength - intn: %s\t%s" % (self.path_length(path), interval))
         dist = 0
 
         ## create a copy path
@@ -80,7 +79,6 @@ class Recognizer():
                 ## add distance
                 dist = dist + d
             i = i + 1
-        print("\Path - Preprocessed:%s\t%s\t" % (len(path), len(new_path)))
         return new_path
 
     ## returns tuple of point coordinate mins and max
