@@ -279,10 +279,14 @@ class Recognizer():
         return template_dict
 
     ## recognizer method -- combines steps in performing scoring and can alternatively be
-    def recognize(self, path, preprocess=False):
+    def recognize(self, path, templates={}, preprocess=False):
+
+        ## if no specified template dict, set to preprocessed dictionary formed at instantiation
+        if templates == {}:
+            templates = self.preprocessed
+
         ## scores array
         scores = []
-        templates = self.preprocessed
         if len(path) < 1:
             return
 
