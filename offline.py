@@ -76,3 +76,4 @@ if __name__ == "__main__":
         for gesture in R.preprocessed[user]:
             for id in R.preprocessed[user][gesture].keys():
                 print(user, gesture, id, "length:", len(xml_base[user][gesture][id]))
+                #R.recognize(R.preprocessed[user][gesture][id], R.preprocessed[user][gesture], preprocess=False)
