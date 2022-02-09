@@ -84,7 +84,7 @@ class MainApplication(tk.Frame):
         self.info_frame.pack(side="bottom")
 
         ## recognizer instantiation
-        self.R = rec.Recognizer(dollar.Dollar.templates, protractor=True)
+        self.R = rec.Recognizer(dollar.Dollar.templates, protractor=False)
 
     ## prompts new info window for app
     def info_window(self):
