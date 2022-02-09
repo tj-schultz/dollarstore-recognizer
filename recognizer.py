@@ -219,7 +219,7 @@ class Recognizer():
         for p in centered.parsed_path:
             ## find and sum new x and y components to the vector
             qx = p.x * math.cos(delta) - p.y * math.sin(delta)
-            qy = p.y * math.cos(delta) - p.x * math.sin(delta)
+            qy = p.y * math.cos(delta) + p.x * math.sin(delta)
             vector.append(qx)
             vector.append(qy)
 
