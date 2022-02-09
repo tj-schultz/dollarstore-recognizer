@@ -137,6 +137,21 @@ class MainApplication(tk.Frame):
         self.match_entry.delete(0, tk.END)
         self.match_entry.insert(0, results[0][0])
 
+        """
+        test = self.R.preprocess(self.pathcanvas.path)
+        test_temp = self.R.preprocess(dollar.Dollar.templates["zig-zag"])
+        for p in test.parsed_path:
+            p.x += 150
+            p.y += 150
+        for q in test_temp.parsed_path:
+            q.x += 150
+            q.y += 150
+        
+
+        self.pathcanvas.draw_points(test, color="blue")
+        self.pathcanvas.draw_points(test_temp, color="green")
+        """
+
 
 if __name__ == "__main__":
 
