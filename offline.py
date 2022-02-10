@@ -6,6 +6,7 @@ authors: TJ Schultz, Skylar McCain
 date: 2/01/22
 """
 
+from curses import keyname
 from xml.dom.minidom import parse
 import xml.dom.minidom as xmlmd
 import csv
@@ -53,34 +54,65 @@ def read_XML_path(filepath):
     return xml_path
 
 def random100_test(R):
-
+    # dictionary to represent columns in output cvs file - converted to dataframe at end
+    output = {
+        'User' : [],
+        'GestureType' : [],
+        'RandomIteration' : [],
+        'NumberOfTraningExamples(E)': [],
+        'TotalSizeOfTrainingSet' : [],
+        'TrainingSetContents' : [],
+        'Canidate' : [],
+        'RecoResultGesture' : [],
+        'Correct/Incorrect' : [],
+        'RecoResultScore' : [],
+        'RecoResultBestMatch' : [],
+        'RecoResultN-BestList' : []
+    }
     # dictionary to store random list of templates each repetion of random100, size = 16 * e
     templates = {}
     # to store one randomly selected canidate for each gesture, size = 16
     canidates = {}
     for user in R.preprocessed:
-        for e in range(1,2):
-            for i in range(1,2):
+        for e in range(1,9):
+            for i in range(1,100):
                 for gesture in R.preprocessed[user]:
                     canidates[gesture] = {}
                     for temp in random.sample(R.preprocessed[user][gesture].keys(), e + 1):
                         id = "_".join([gesture,temp])
                         templates[id] = R.preprocessed[user][gesture][temp]
                     canidates[gesture][id] = templates.pop(id)
-                #print("\nTemplates\n", list(templates))
-                #print("\nCandiates:\n", canidates)
                 for gesture in canidates.keys():
                     for canidate in canidates[gesture]:
-                        #print(canidate)
+
                         #call recognizer on canidate with list of randomly generated templates from above
-                        print(user, gesture, canidate, "scores\n", R.recognize(canidates[gesture][canidate], templates), "\n")
+                        n_best = R.recognize(canidates[gesture][canidate],templates)
+                    
+                        #write row elements to output dictionary
+                        output['User'].append(user)
+                        output['GestureType'].append(gesture)
+                        output['RandomIteration'].append(i)
+                        output['NumberOfTraningExamples(E)'].append(e)
+                        output['TotalSizeOfTrainingSet'].append(e*16)
+                        output['TrainingSetContents'].append(list(templates.keys()))
+                        output['Canidate'].append(canidate)
+
+                        #gets string of result gesture type
+                        reco_gesture = n_best[0][0].rsplit('_',1)[0]
+                        output['RecoResultGesture'].append(reco_gesture)
+                        output['Correct/Incorrect'].append('correct' if reco_gesture == gesture else 'incorrect')
+                        output['RecoResultScore'].append(n_best[0][1])
+                        output['RecoResultBestMatch'].append(n_best[0][0])
+                        output['RecoResultN-BestList'].append(n_best)
                         #if correct
                             #score++
                         #write score/100 to output-doc at user, gesture, level e
-                        #write [user, gesture, e, e*16, templates, x, result of recognize]
-              
+                        
                 templates.clear()
                 canidates.clear()
+    output_df = pd.DataFrame(output)
+    output_df.to_csv('random100_test_output.csv')
+   
 
 
 if __name__ == "__main__":
@@ -103,11 +135,11 @@ if __name__ == "__main__":
 
     ## instantiate the recognizer and preprocess the template dictionary recursively
     R = rec.Recognizer(xml_base)
-    random100_test()
+    random100_test(R)
 
     ## debug -- vectors should be of length 2 * 64 = 128
-    for user in R.preprocessed:
-        for gesture in R.preprocessed[user]:
-            for id in R.preprocessed[user][gesture].keys():
-                print(user, gesture, id, "length:", len(xml_base[user][gesture][id]))
-                #R.recognize(R.preprocessed[user][gesture][id], R.preprocessed[user][gesture], preprocess=False)
+    # for user in R.preprocessed:
+    #     for gesture in R.preprocessed[user]:
+    #         for id in R.preprocessed[user][gesture].keys():
+    #             print(user, gesture, id, "length:", len(xml_base[user][gesture][id]))
+    #             #R.recognize(R.preprocessed[user][gesture][id], R.preprocessed[user][gesture], preprocess=False)
