@@ -92,7 +92,10 @@ class MainApplication(tk.Frame):
         window.title("Info")
 
         ## open icon
-        #window.iconbitmap(os.path.join('resources', 'icon.ico'))
+        try:
+            window.iconbitmap(os.path.join('resources', 'icon.ico'))
+        except:
+            print("Icon import error")
 
         info_text = "This is a tkinter application\n running on python %s and developed for open use by\n"\
         "TJ Schultz, Skylar McCain. 2022\n" \
@@ -158,8 +161,13 @@ if __name__ == "__main__":
     ## tkinter application root
     root = tk.Tk()
 
-    ## open icon
-    #root.iconbitmap(os.path.join('resources', 'icon.ico'))
+    try:
+        ## open icon
+        root.iconbitmap(os.path.join('resources', 'icon.ico'))
+    except:
+        print("Icon import error")
+
+
 
     ## define window properties
     root.title("dollarstore-recognizer")
