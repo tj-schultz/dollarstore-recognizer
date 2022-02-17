@@ -143,7 +143,7 @@ class MainApplication(tk.Frame):
 
         ## increment loop
         self.samplenum_entry.delete(0, tk.END)
-        if g_id == 2:
+        if g_id == 10:
             self.samplenum_entry.insert(0, 1)
             self.drawing_entry.delete(0, tk.END)
             if s_index < (len(self.sample_types)-1):
