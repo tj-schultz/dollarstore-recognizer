@@ -62,7 +62,7 @@ def random100_test(R):
         'NumberOfTraningExamples(E)': [],
         'TotalSizeOfTrainingSet' : [],
         'TrainingSetContents' : [],
-        'Canidate' : [],
+        'Candidate' : [],
         'RecoResultGesture' : [],
         'Correct/Incorrect' : [],
         'RecoResultScore' : [],
@@ -74,6 +74,8 @@ def random100_test(R):
     # to store one randomly selected canidate for each gesture, size = 16
     canidates = {}
     for user in R.preprocessed:
+        # score to calculate overall user accuracy
+        score = 0
         for e in range(1,9):
             for i in range(1,100):
                 for gesture in R.preprocessed[user]:
@@ -95,7 +97,7 @@ def random100_test(R):
                         output['NumberOfTraningExamples(E)'].append(e)
                         output['TotalSizeOfTrainingSet'].append(e*16)
                         output['TrainingSetContents'].append(list(templates.keys()))
-                        output['Canidate'].append(canidate)
+                        output['Candidate'].append(canidate)
 
                         #gets string of result gesture type
                         reco_gesture = n_best[0][0].rsplit('_',1)[0]
@@ -104,17 +106,18 @@ def random100_test(R):
                         output['RecoResultScore'].append(n_best[0][1])
                         output['RecoResultBestMatch'].append(n_best[0][0])
                         output['RecoResultN-BestList'].append(n_best)
-                        #if correct
-                            #score++
-                        #write score/100 to output-doc at user, gesture, level e
-                        
+
+                        if(reco_gesture == gesture):
+                            score+=1
                 templates.clear()
-                canidates.clear()
+                canidates.clear()       
+        print("user ", user, " completed")
+    score_df = pd.DataFrame({'User' : ['AvgUserAccuracy'], 'GestureType' : [score/(100*16*9*len(R.preprocessed))], 'RandomIteration' : [''], 'NumberOfTrainingExamples(E)' : [''], 'TotalSizeOfTrainingSet' : [''], 'TrainingSetContents' : [''], 'Candidate' : [''], 'RecoResultGesture' : [''], 'Correct/Incorrect' : [''], 'RecoResultScore' : [''], 'RecoResultBestMatch' : [''], 'RecoResultN-BestList' : ['']})  
     output_df = pd.DataFrame(output)
+    output_df = pd.concat([output_df, score_df])
     output_df.to_csv('random100_test_output.csv')
+    
    
-
-
 if __name__ == "__main__":
 
     ## build xml_base
@@ -131,7 +134,7 @@ if __name__ == "__main__":
                     os.path.join("xml", user_key, "slow", "%s%s.xml"\
                                  % (prefix, file_key))
                 )
-
+    
 
     ## instantiate the recognizer and preprocess the template dictionary recursively
     R = rec.Recognizer(xml_base)

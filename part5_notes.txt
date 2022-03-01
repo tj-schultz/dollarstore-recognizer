@@ -1,0 +1,3 @@
+To-do:
+    - set up offline.py to run with data set collected from part4
+        - committ changes to offline.py and pull data set from P4 branch
