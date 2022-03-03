@@ -42,6 +42,7 @@ class Recognizer():
     ## resamples a path into n evenly spaced points
     def resample(self, path, n):
         if n <= 1:
+            print("n <= 1 in resample")
             return path
 
         interval = self.path_length(path) / (n - 1)
@@ -81,6 +82,7 @@ class Recognizer():
                 ## add distance
                 dist = dist + d
             i = i + 1
+        
         return new_path
 
     ## returns tuple of point coordinate mins and max
@@ -125,7 +127,6 @@ class Recognizer():
     ## rotates the points so their indicative angle is 0 degrees
     def rotate_to_zero(self, path):
         if(len(path.parsed_path) == 0):
-            print("path is 0")
             return path
         cent = self.centroid(path)
         theta = math.atan2((cent.y - path.parsed_path[0].y), (cent.x - path.parsed_path[0].x))
@@ -242,6 +243,8 @@ class Recognizer():
         for i in range(len(vector)):
             vector[i] = vector[i] / magnitude
 
+        if len(vector) < 0:
+            print("vector < 0")
         return vector
 
     ## optimal cosine distance function to calculate the OCD for two vectors
@@ -259,15 +262,13 @@ class Recognizer():
     def preprocess(self, path):
         ## resample the points
         new_path = self.resample(path, dollar.Dollar.prefs["n_points"])
-
+       
         ## performing protractor preprocessing
         if self.use_protractor:
             return self.vectorize(new_path, False)
 
         ## rotate to indicative angle
         new_path = self.rotate_to_zero(new_path)
-        if len(new_path) == 0:
-            print()
 
         ## scale to size box
         new_path = self.scale_to_square(new_path, dollar.Dollar.prefs["square_size"])

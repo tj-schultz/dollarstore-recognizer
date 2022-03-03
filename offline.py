@@ -48,6 +48,10 @@ def read_XML_path(filepath):
             y = float(point.getAttribute("Y"))
             xml_path.stitch(pth.Point(x, y))
 
+        # text deebugging to find which files contained incomplete data
+        # if len(xml_path) < 2:
+        #     print(filepath)
+        
     except Exception as e:
         print(e)
         print("Unable to read", filepath, "\n")
@@ -78,8 +82,8 @@ def random100_test(R):
     for user in R.preprocessed:
         # score to calculate overall user accuracy
         score = 0
-        for e in range(1,5):
-            for i in range(1,2):
+        for e in range(1,9):
+            for i in range(1,100):
                 for gesture in R.preprocessed[user]:
                     canidates[gesture] = {}
                     for temp in random.sample(R.preprocessed[user][gesture].keys(), e + 1):
@@ -125,8 +129,10 @@ def random100_test(R):
 if __name__ == "__main__":
 
     ## build xml_base
-    for i in range(1, 7):                      ## for each user
-        user_key = "S%s" % str(i).zfill(2)
+    # modified to only read in data with appropiate constraints -- incomplete data encountered on Subject 3 and Subject 5
+    # mode information on this issue in Part 5 submission notes
+    for user_key in ["S01", "S02", "S04", "S06"]:                      ## for each user
+        #user_key = "S%s" % str(i).zfill(2)
         xml_base[user_key] = {}                 ## add user key-dict
         for prefix in xml_filetypes:            ## for each gesture
             xml_base[user_key][prefix] = {}     ## add prefix key-dict
@@ -141,7 +147,7 @@ if __name__ == "__main__":
                
 
     ## instantiate the recognizer and preprocess the template dictionary recursively
-    R = rec.Recognizer(xml_base)
+    R = rec.Recognizer(xml_base, protractor=True)
    
     random100_test(R)
     
