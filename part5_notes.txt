@@ -1,3 +1,12 @@
+Done: 
+    - added AvgUserAccuracy calculation and output to offline.py
+    - committed offline.py changes to P5 branch
+    - pulled in user data from P4
+    - changed offline.py to read from P4 data files -- changed file names to make it same format as P3 xml files
+
 To-do:
     - set up offline.py to run with data set collected from part4
-        - committ changes to offline.py and pull data set from P4 branch
+        - currently running into problem reading in files from P4 data and running recognizer on them
+            - check differences in these xml files and xml files from P3
+    - change names of user consent forms to ensure ananimity
+    

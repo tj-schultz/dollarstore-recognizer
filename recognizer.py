@@ -9,6 +9,8 @@ import math
 import path as pth
 import dollar
 
+
+
 ## recognizer class containing canvas display methods for
 class Recognizer():
 
@@ -122,6 +124,9 @@ class Recognizer():
 
     ## rotates the points so their indicative angle is 0 degrees
     def rotate_to_zero(self, path):
+        if(len(path.parsed_path) == 0):
+            print("path is 0")
+            return path
         cent = self.centroid(path)
         theta = math.atan2((cent.y - path.parsed_path[0].y), (cent.x - path.parsed_path[0].x))
         new_path = self.rotate_by(path, (theta * -1.0))
@@ -132,15 +137,16 @@ class Recognizer():
 
         ## get bbox info
         bbox = self.bbox(path)
-        b_width = bbox[1] - bbox[0]
-        b_height = bbox[3] - bbox[2]
+        b_width = float(bbox[1]) - float(bbox[0])
+        b_height = float(bbox[3]) - float(bbox[2])
 
         new_path = pth.Path()
 
-        for p in path.parsed_path:
-            qx = p.x * (size / b_width)
-            qy = p.y * (size / b_height)
-            new_path.stitch(pth.Point(qx, qy))
+        if(b_height > 0 and b_width > 0):
+            for p in path.parsed_path:
+                qx = p.x * (size / b_width)
+                qy = p.y * (size / b_height)
+                new_path.stitch(pth.Point(qx, qy))
 
         return new_path
 
@@ -162,6 +168,11 @@ class Recognizer():
         d = 0
         for i in range(min(len(A), len(B))):
             d = d + self.distance(A.parsed_path[i], B.parsed_path[i])
+        if(min(len(A), len(B)) == 0):
+            if(max(len(A), len(B)) == 0):
+                return d
+            else:
+                return d / max(len(A), len(B))
         return d / min(len(A), len(B))
 
     ## distance at angle
@@ -255,6 +266,8 @@ class Recognizer():
 
         ## rotate to indicative angle
         new_path = self.rotate_to_zero(new_path)
+        if len(new_path) == 0:
+            print()
 
         ## scale to size box
         new_path = self.scale_to_square(new_path, dollar.Dollar.prefs["square_size"])
@@ -319,5 +332,6 @@ class Recognizer():
                 dscore = 1.0 - (d / hd)
                 scores.append((t_key, dscore))
         scores.sort(key=lambda y: y[1], reverse=True)
+
         #print(scores)
         return scores

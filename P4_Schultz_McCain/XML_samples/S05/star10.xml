@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+  <Gesture Name="star10" Subject="Lindsey R" Speed="medium" Number="10" NumPts="5" AppName="dollarstore-notepad" Date="2022-02-17" Time="15:59:01.493226">
+    <Point X="205.0" Y="365.0" T="15:59:01.493273"/>
+    <Point X="204.0" Y="365.0" T="15:59:01.493290"/>
+    <Point X="203.0" Y="365.0" T="15:59:01.493308"/>
+    <Point X="202.0" Y="365.0" T="15:59:01.493326"/>
+    <Point X="195.0" Y="365.0" T="15:59:01.493343"/>
+  </Gesture>

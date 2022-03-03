@@ -19,7 +19,7 @@ import pandas as pd
 
 ## list of path types to read using filenames with '01-10' appended
 xml_filetypes = ["arrow", "caret", "check", "circle", "delete_mark", "left_curly_brace",\
-                 "left_sq_bracket", "pigtail", "question_mark", "rectangle",\
+                 "left_sq_bracket", "pigtail", "zig_zag", "rectangle",\
                  "right_curly_brace", "right_sq_bracket", "star", "triangle",\
                  "v", "x"]
 
@@ -30,6 +30,9 @@ xml_base = {}
 
 ## reads a single xml file as a DOM element, records gesture and returns the path object
 def read_XML_path(filepath):
+  
+     ## formed path
+    xml_path = pth.Path()
 
     try:
         ## grab root of file
@@ -39,21 +42,20 @@ def read_XML_path(filepath):
         ## parse the point tags
         point_tags = element.getElementsByTagName("Point")
 
-        ## formed path
-        xml_path = pth.Path()
-
         ## get attributes and build path object
         for point in point_tags:
-            x = int(point.getAttribute("X"))
-            y = int(point.getAttribute("Y"))
+            x = float(point.getAttribute("X"))
+            y = float(point.getAttribute("Y"))
             xml_path.stitch(pth.Point(x, y))
 
-    except:
+    except Exception as e:
+        print(e)
         print("Unable to read", filepath, "\n")
-
+        
     return xml_path
 
 def random100_test(R):
+
     # dictionary to represent columns in output cvs file - converted to dataframe at end
     output = {
         'User' : [],
@@ -76,8 +78,8 @@ def random100_test(R):
     for user in R.preprocessed:
         # score to calculate overall user accuracy
         score = 0
-        for e in range(1,9):
-            for i in range(1,100):
+        for e in range(1,5):
+            for i in range(1,2):
                 for gesture in R.preprocessed[user]:
                     canidates[gesture] = {}
                     for temp in random.sample(R.preprocessed[user][gesture].keys(), e + 1):
@@ -89,6 +91,8 @@ def random100_test(R):
 
                         #call recognizer on canidate with list of randomly generated templates from above
                         n_best = R.recognize(canidates[gesture][canidate],templates)
+                        if len(n_best) == 0:
+                            print(user, gesture, canidate, templates.keys())
                     
                         #write row elements to output dictionary
                         output['User'].append(user)
@@ -111,7 +115,7 @@ def random100_test(R):
                             score+=1
                 templates.clear()
                 canidates.clear()       
-        print("user ", user, " completed")
+        print("user ", user, " completed random100 loop")
     score_df = pd.DataFrame({'User' : ['AvgUserAccuracy'], 'GestureType' : [score/(100*16*9*len(R.preprocessed))], 'RandomIteration' : [''], 'NumberOfTrainingExamples(E)' : [''], 'TotalSizeOfTrainingSet' : [''], 'TrainingSetContents' : [''], 'Candidate' : [''], 'RecoResultGesture' : [''], 'Correct/Incorrect' : [''], 'RecoResultScore' : [''], 'RecoResultBestMatch' : [''], 'RecoResultN-BestList' : ['']})  
     output_df = pd.DataFrame(output)
     output_df = pd.concat([output_df, score_df])
@@ -121,8 +125,8 @@ def random100_test(R):
 if __name__ == "__main__":
 
     ## build xml_base
-    for i in range(2, 12):                      ## for each user
-        user_key = "s%s" % str(i).zfill(2)
+    for i in range(1, 7):                      ## for each user
+        user_key = "S%s" % str(i).zfill(2)
         xml_base[user_key] = {}                 ## add user key-dict
         for prefix in xml_filetypes:            ## for each gesture
             xml_base[user_key][prefix] = {}     ## add prefix key-dict
@@ -131,14 +135,16 @@ if __name__ == "__main__":
 
                 ## read as DOM -- append to dictionary
                 xml_base[user_key][prefix][file_key] = read_XML_path(\
-                    os.path.join("xml", user_key, "slow", "%s%s.xml"\
+                    os.path.join(os.getcwd(), "P4_Schultz_McCain/XML_samples", user_key, "%s%s.xml"\
                                  % (prefix, file_key))
                 )
-    
+               
 
     ## instantiate the recognizer and preprocess the template dictionary recursively
     R = rec.Recognizer(xml_base)
+   
     random100_test(R)
+    
 
     ## debug -- vectors should be of length 2 * 64 = 128
     # for user in R.preprocessed:
